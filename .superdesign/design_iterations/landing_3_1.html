@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LearnAI - Learn Smarter with AI-Powered Courses</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'orange-warm': '#FF6B35',
+                        'pink-warm': '#FF4081',
+                        'purple-warm': '#9C27B0',
+                        'gradient-start': '#FF6B35',
+                        'gradient-end': '#FF4081'
+                    },
+                    fontFamily: {
+                        'display': ['system-ui', 'sans-serif'],
+                        'body': ['system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Pulsing squares animation */
+        @keyframes pulseSquare {
+            0%, 100% {
+                opacity: 0.02;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.05;
+                transform: scale(1.1);
+            }
+        }
+
+        @keyframes pulseSquareHover {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        .pulse-square {
+            position: absolute;
+            background: linear-gradient(135deg, #FF6B35, #FF4081, #9C27B0);
+            border-radius: 8px;
+            animation: pulseSquare 3s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .pulse-square-1 {
+            width: 60px;
+            height: 60px;
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .pulse-square-2 {
+            width: 40px;
+            height: 40px;
+            top: 20%;
+            right: 8%;
+            animation-delay: 0.5s;
+        }
+
+        .pulse-square-3 {
+            width: 80px;
+            height: 80px;
+            top: 60%;
+            left: 3%;
+            animation-delay: 1s;
+        }
+
+        .pulse-square-4 {
+            width: 50px;
+            height: 50px;
+            top: 70%;
+            right: 12%;
+            animation-delay: 1.5s;
+        }
+
+        .pulse-square-5 {
+            width: 35px;
+            height: 35px;
+            top: 45%;
+            left: 15%;
+            animation-delay: 2s;
+        }
+
+        .pulse-square-6 {
+            width: 70px;
+            height: 70px;
+            top: 30%;
+            right: 25%;
+            animation-delay: 2.5s;
+        }
+
+        .pulse-square-7 {
+            width: 45px;
+            height: 45px;
+            top: 85%;
+            left: 20%;
+            animation-delay: 0.8s;
+        }
+
+        .pulse-square-8 {
+            width: 55px;
+            height: 55px;
+            top: 15%;
+            left: 40%;
+            animation-delay: 1.2s;
+        }
+
+        .pulse-square-9 {
+            width: 65px;
+            height: 65px;
+            top: 50%;
+            right: 35%;
+            animation-delay: 1.8s;
+        }
+
+        .pulse-square-10 {
+            width: 38px;
+            height: 38px;
+            top: 75%;
+            right: 5%;
+            animation-delay: 0.3s;
+        }
+
+        /* Categories section hover effect */
+        .categories-container:hover .pulse-square {
+            animation: pulseSquareHover 2s ease-in-out infinite;
+        }
+
+        /* Individual category card hover effect */
+        .category-card:hover ~ .pulse-square,
+        .category-card:hover .pulse-square {
+            animation: pulseSquareHover 1.5s ease-in-out infinite;
+        }
+
+        /* Enhanced category card styles */
+        .category-card {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Categories section positioning */
+        .categories-section {
+            position: relative;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body class="font-body text-gray-800 overflow-x-hidden">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0 flex items-center">
+                        <div class="w-8 h-8 bg-gradient-to-r from-orange-warm to-pink-warm rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold text-sm">AI</span>
+                        </div>
+                        <span class="font-display font-bold text-xl text-gray-900">LearnAI</span>
+                    </div>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#features" class="text-gray-700 hover:text-orange-warm transition-colors px-3 py-2 text-sm font-medium">Features</a>
+                        <a href="#how-it-works" class="text-gray-700 hover:text-orange-warm transition-colors px-3 py-2 text-sm font-medium">How It Works</a>
+                        <a href="#categories" class="text-gray-700 hover:text-orange-warm transition-colors px-3 py-2 text-sm font-medium">Categories</a>
+                        <a href="#pricing" class="text-gray-700 hover:text-orange-warm transition-colors px-3 py-2 text-sm font-medium">Pricing</a>
+                        <button class="bg-gradient-to-r from-orange-warm to-pink-warm text-white px-6 py-2 rounded-full text-sm font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200">
+                            Start Free Trial
+                        </button>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button class="text-gray-700 hover:text-orange-warm">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-br from-orange-warm via-pink-warm to-purple-warm overflow-hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-10"></div>
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <div class="text-center lg:text-left">
+                    <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+                        Learn Smarter with
+                        <span class="block text-yellow-200">AI-Powered Courses</span>
+                    </h1>
+                    <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto lg:mx-0">
+                        Get instant answers while you learn with our AI assistant. Transform your learning experience with interactive courses and smart technology.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <button class="bg-white text-orange-warm px-8 py-4 rounded-full text-lg font-semibold hover:shadow-xl transform hover:scale-105 transition-all duration-200 hover:bg-yellow-50">
+                            Start Free Trial
+                        </button>
+                        <button class="bg-transparent border-2 border-white text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-white hover:text-orange-warm transition-all duration-200">
+                            Upload Your Course
+                        </button>
+                    </div>
+                </div>
+                <div class="flex justify-center lg:justify-end">
+                    <div class="relative">
+                        <div class="w-80 h-80 bg-white/20 rounded-3xl backdrop-blur-sm border border-white/30 flex items-center justify-center transform rotate-6 hover:rotate-3 transition-transform duration-300">
+                            <div class="w-64 h-64 bg-gradient-to-br from-yellow-400 to-orange-400 rounded-2xl flex items-center justify-center">
+                                <div class="text-white text-8xl font-bold">▶</div>
+                            </div>
+                        </div>
+                        <div class="absolute -top-4 -right-4 w-16 h-16 bg-yellow-400 rounded-full flex items-center justify-center animate-bounce">
+                            <span class="text-white text-2xl font-bold">AI</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-16 bg-white transform -skew-y-1 origin-bottom-left"></div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                    Supercharge Your Learning
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Experience the future of education with our AI-powered features designed to make learning more engaging and effective.
+                </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="bg-gradient-to-br from-orange-50 to-pink-50 p-8 rounded-2xl hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-2">
+                    <div class="w-16 h-16 bg-gradient-to-r from-orange-warm to-pink-warm rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-gray-900 mb-4">Interactive AI Chat</h3>
+                    <p class="text-gray-600">
+                        Get instant answers to your questions while watching videos. Our AI assistant understands context and provides relevant explanations.
+                    </p>
+                </div>
+                <div class="bg-gradient-to-br from-pink-50 to-purple-50 p-8 rounded-2xl hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-2">
+                    <div class="w-16 h-16 bg-gradient-to-r from-pink-warm to-purple-warm rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-gray-900 mb-4">Video Transcripts</h3>
+                    <p class="text-gray-600">
+                        Full searchable transcripts for every video. Find specific topics, take notes, and never miss important details again.
+                    </p>
+                </div>
+                <div class="bg-gradient-to-br from-purple-50 to-blue-50 p-8 rounded-2xl hover:shadow-xl transition-shadow duration-300 transform hover:-translate-y-2">
+                    <div class="w-16 h-16 bg-gradient-to-r from-purple-warm to-blue-500 rounded-xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                        </svg>
+                    </div>
+                    <h3 class="font-display text-xl font-bold text-gray-900 mb-4">Course Marketplace</h3>
+                    <p class="text-gray-600">
+                        Discover thousands of courses from expert instructors. Upload your own courses and earn while you teach others.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="py-20 bg-gray-50 transform -skew-y-1">
+        <div class="transform skew-y-1">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16">
+                    <h2 class="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                        How LearnAI Works
+                    </h2>
+                    <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                        Get started in just three simple steps and transform your learning experience today.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <div class="text-center group">
+                        <div class="relative mb-8">
+                            <div class="w-24 h-24 bg-gradient-to-r from-orange-warm to-pink-warm rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <span class="text-white text-2xl font-bold">1</span>
+                            </div>
+                            <div class="absolute top-1/2 left-full w-full h-1 bg-gradient-to-r from-orange-warm to-pink-warm transform -translate-y-1/2 hidden md:block"></div>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-gray-900 mb-4">Choose Your Course</h3>
+                        <p class="text-gray-600">
+                            Browse our extensive library of AI-enhanced courses or upload your own video content to get started.
+                        </p>
+                    </div>
+                    <div class="text-center group">
+                        <div class="relative mb-8">
+                            <div class="w-24 h-24 bg-gradient-to-r from-pink-warm to-purple-warm rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <span class="text-white text-2xl font-bold">2</span>
+                            </div>
+                            <div class="absolute top-1/2 left-full w-full h-1 bg-gradient-to-r from-pink-warm to-purple-warm transform -translate-y-1/2 hidden md:block"></div>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-gray-900 mb-4">Learn & Interact</h3>
+                        <p class="text-gray-600">
+                            Watch videos while chatting with AI. Ask questions, get explanations, and deepen your understanding in real-time.
+                        </p>
+                    </div>
+                    <div class="text-center group">
+                        <div class="mb-8">
+                            <div class="w-24 h-24 bg-gradient-to-r from-purple-warm to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                                <span class="text-white text-2xl font-bold">3</span>
+                            </div>
+                        </div>
+                        <h3 class="font-display text-xl font-bold text-gray-900 mb-4">Master Skills</h3>
+                        <p class="text-gray-600">
+                            Apply your knowledge with AI-powered exercises and track your progress as you master new skills.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Popular Categories with Animated Background -->
+    <section id="categories" class="categories-section py-20 bg-white">
+        <!-- Animated Pulsing Squares Background -->
+        <div class="pulse-square pulse-square-1"></div>
+        <div class="pulse-square pulse-square-2"></div>
+        <div class="pulse-square pulse-square-3"></div>
+        <div class="pulse-square pulse-square-4"></div>
+        <div class="pulse-square pulse-square-5"></div>
+        <div class="pulse-square pulse-square-6"></div>
+        <div class="pulse-square pulse-square-7"></div>
+        <div class="pulse-square pulse-square-8"></div>
+        <div class="pulse-square pulse-square-9"></div>
+        <div class="pulse-square pulse-square-10"></div>
+        
+        <div class="categories-container max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+                    Popular Categories
+                </h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Explore our most popular learning categories and discover new skills that will advance your career.
+                </p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="category-card bg-gradient-to-br from-orange-100 to-orange-200 p-6 rounded-2xl text-center hover:shadow-lg transform hover:scale-105 transition-all duration-300 cursor-pointer">
+                    <div class="w-16 h-16 bg-gradient-to-r from-orange-warm to-orange-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">💻</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Programming</h3>
+                    <p class="text-sm text-gray-600">2,500+ courses</p>
+                </div>
+                <div class="category-card bg-gradient-to-br from-pink-100 to-pink-200 p-6 rounded-2xl text-center hover:shadow-lg transform hover:scale-105 transition-all duration-300 cursor-pointer">
+                    <div class="w-16 h-16 bg-gradient-to-r from-pink-warm to-pink-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">🎨</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Design</h3>
+                    <p class="text-sm text-gray-600">1,800+ courses</p>
+                </div>
+                <div class="category-card bg-gradient-to-br from-purple-100 to-purple-200 p-6 rounded-2xl text-center hover:shadow-lg transform hover:scale-105 transition-all duration-300 cursor-pointer">
+                    <div class="w-16 h-16 bg-gradient-to-r from-purple-warm to-purple-500 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">📈</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Business</h3>
+                    <p class="text-sm text-gray-600">3,200+ courses</p>
+                </div>
+                <div class="category-card bg-gradient-to-br from-blue-100 to-blue-200 p-6 rounded-2xl text-center hover:shadow-lg transform hover:scale-105 transition-all duration-300 cursor-pointer">
+                    <div class="w-16 h-16 bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">🧠</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">AI & ML</h3>
+                    <p class="text-sm text-gray-600">1,200+ courses</p>
+                </div>
+                <div class="category-card bg-gradient-to-br from-green-100 to-green-200 p-6 rounded-2xl text-center hover:shadow-lg transform hover:scale-105 transition-all duration-300 cursor-pointer">
+                    <div class="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">📊</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Data Science</h3>
+                    <p class="text-sm text-gray-600">900+ courses</p>
+                </div>
+                <div class="category-card bg-gradient-to-br from-yellow-100 to-yellow-200 p-6 rounded-2xl text-center hover:shadow-lg transform hover:scale-105 transition-all duration-300 cursor-pointer">
+                    <div class="w-16 h-16 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">📱</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Mobile Dev</h3>
+                    <p class="text-sm text-gray-600">750+ courses</p>
+                </div>
+                <div class="category-card bg-gradient-to-br from-indigo-100 to-indigo-200 p-6 rounded-2xl text-center hover:shadow-lg transform hover:scale-105 transition-all duration-300 cursor-pointer">
+                    <div class="w-16 h-16 bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">🎵</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Music</h3>
+                    <p class="text-sm text-gray-600">600+ courses</p>
+                </div>
+                <div class="category-card bg-gradient-to-br from-red-100 to-red-200 p-6 rounded-2xl text-center hover:shadow-lg transform hover:scale-105 transition-all duration-300 cursor-pointer">
+                    <div class="w-16 h-16 bg-gradient-to-r from-red-500 to-red-600 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <span class="text-white text-2xl">📸</span>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Photography</h3>
+                    <p class="text-sm text-gray-600">800+ courses</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-20 bg-gradient-to-r from-orange-warm to-pink-warm transform -skew-y-1">
+        <div class="transform skew-y-1">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <h2 class="font-display text-3xl sm:text-4xl font-bold text-white mb-4">
+                    Stay Updated with LearnAI
+                </h2>
+                <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+                    Get the latest courses, AI learning tips, and platform updates delivered to your inbox every week.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                    <input 
+                        type="email" 
+                        placeholder="Enter your email address" 
+                        class="flex-1 px-6 py-4 rounded-full text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-4 focus:ring-white/30"
+                    />
+                    <button class="bg-white text-orange-warm px-8 py-4 rounded-full font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 whitespace-nowrap">
+                        Subscribe Now
+                    </button>
+                </div>
+                <p class="text-white/80 text-sm mt-4">
+                    No spam, unsubscribe at any time. We respect your privacy.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="col-span-1 lg:col-span-2">
+                    <div class="flex items-center mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-r from-orange-warm to-pink-warm rounded-lg flex items-center justify-center mr-3">
+                            <span class="text-white font-bold">AI</span>
+                        </div>
+                        <span class="font-display font-bold text-2xl">LearnAI</span>
+                    </div>
+                    <p class="text-gray-400 mb-6 max-w-md">
+                        Revolutionizing education with AI-powered learning experiences. Join thousands of learners already transforming their skills with LearnAI.
+                    </p>
+                    <div class="flex space-x-4">
+                        <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-warm transition-colors cursor-pointer">
+                            <span class="text-sm">f</span>
+                        </div>
+                        <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-warm transition-colors cursor-pointer">
+                            <span class="text-sm">t</span>
+                        </div>
+                        <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-warm transition-colors cursor-pointer">
+                            <span class="text-sm">in</span>
+                        </div>
+                        <div class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center hover:bg-orange-warm transition-colors cursor-pointer">
+                            <span class="text-sm">ig</span>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Platform</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Browse Courses</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">AI Assistant</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Upload Course</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Become Instructor</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Mobile App</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg mb-4">Support</h3>
+                    <ul class="space-y-2 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+                        <li><a href="#" class="hover:text-white transition-colors">Cookie Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400 text-sm">
+                    © 2024 LearnAI. All rights reserved. Made with ❤️ for learners worldwide.
+                </p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Status</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">API</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Careers</a>
+                    <a href="#" class="text-gray-400 hover:text-white text-sm transition-colors">Blog</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
