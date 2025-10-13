@@ -82,50 +82,128 @@ export async function creatorRoutes(fastify: FastifyInstance) {
     return { token };
   });
 
-  fastify.post('/courses', { preHandler: [fastify.authenticate] }, async (request, reply) => {
-    const { title, description, price } = createCourseSchema.parse(request.body);
-    const creatorId = request.user.id;
+  fastify.post(
+    "/courses",
+    { preHandler: [fastify.authenticate] },
+    async (request, reply) => {
+      const { title, description, price } = createCourseSchema.parse(
+        request.body
+      );
+      const creatorId = request.user.id;
 
-    const newCourse = await db.insert(courses).values({
-      title,
-      description,
-      price: price.toString(),
-      creatorId,
-    }).returning();
+      const newCourse = await db
+        .insert(courses)
+        .values({
+          title,
+          description,
+          price: price.toString(),
+          creatorId,
+        })
+        .returning();
 
-    return reply.status(201).send({ message: 'Course created successfully', course: newCourse[0] });
-  });
+      return reply
+        .status(201)
+        .send({ message: "Course created successfully", course: newCourse[0] });
+    }
+  );
 
-  fastify.put('/courses/:courseId', { preHandler: [fastify.authenticate] }, async (request, reply) => {
-    const { courseId } = request.params as { courseId: string };
-    const { title, description, price } = createCourseSchema.parse(request.body);
+  fastify.put(
+    "/courses/:courseId",
+    { preHandler: [fastify.authenticate] },
+    async (request, reply) => {
+      const { courseId } = request.params as { courseId: string };
+      const { title, description, price } = createCourseSchema.parse(
+        request.body
+      );
 
-    const updatedCourse = await db.update(courses).set({
-      title,
-      description,
-      price: price.toString(),
-    }).where(eq(courses.id, courseId)).returning();
+      const updatedCourse = await db
+        .update(courses)
+        .set({
+          title,
+          description,
+          price: price.toString(),
+        })
+        .where(eq(courses.id, courseId))
+        .returning();
 
-    return { message: 'Course updated successfully', course: updatedCourse[0] };
-  });
+      return {
+        message: "Course updated successfully",
+        course: updatedCourse[0],
+      };
+    }
+  );
 
-  fastify.get('/courses/:courseId', { preHandler: [fastify.authenticate] }, async (request, reply) => {
-    const { courseId } = request.params as { courseId: string };
+  fastify.get(
+    "/courses/:courseId",
+    { preHandler: [fastify.authenticate] },
+    async (request, reply) => {
+      const { courseId } = request.params as { courseId: string };
 
-    const course = await db.query.courses.findFirst({
-      where: eq(courses.id, courseId),
+      const course = await db.query.courses.findFirst({
+        where: eq(courses.id, courseId),
+      });
+
+      return course;
+    }
+  );
+
+  // Delete course (creators only)
+  fastify.delete(
+    "/courses/:courseId",
+    { preHandler: [fastify.authenticate] },
+    async (request, reply) => {
+      const { courseId } = request.params as { courseId: string };
+      const creatorId = request.user.id;
+
+      // Check if course exists and belongs to the creator
+      const course = await db.query.courses.findFirst({
+        where: eq(courses.id, courseId),
+      });
+
+      if (!course) {
+        return reply.status(404).send({ message: "Course not found" });
+      }
+
+      if (course.creatorId !== creatorId) {
+        return reply
+          .status(403)
+          .send({ message: "You can only delete your own courses" });
+      }
+
+      // Delete the course (videos will be deleted by CASCADE)
+      await db.delete(courses).where(eq(courses.id, courseId));
+
+      return { message: "Course deleted successfully" };
+    }
+  );
+
+  fastify.get(
+    "/creators/courses",
+    { preHandler: [fastify.authenticate] },
+    async (request, reply) => {
+      const creatorId = request.user.id;
+
+      const creatorCourses = await db.query.courses.findMany({
+        where: eq(courses.creatorId, creatorId),
+      });
+
+      return creatorCourses;
+    }
+  );
+
+  // Get all courses (public endpoint for browsing)
+  fastify.get("/courses", async (request, reply) => {
+    const allCourses = await db.query.courses.findMany({
+      with: {
+        creator: {
+          columns: {
+            id: true,
+            username: true,
+          },
+        },
+      },
     });
 
-    return course;
-  });
-
-  fastify.get('/creators/courses', { preHandler: [fastify.authenticate] }, async (request, reply) => {
-    const creatorId = request.user.id;
-
-    const creatorCourses = await db.query.courses.findMany({
-      where: eq(courses.creatorId, creatorId),
-    });
-
-    return creatorCourses;
+    return allCourses;
   });
 }

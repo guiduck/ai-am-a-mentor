@@ -1,0 +1,193 @@
+.videoContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px solid var(--border-secondary);
+}
+
+.video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.placeholder,
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: var(--space-6);
+}
+
+.placeholderIcon,
+.errorIcon {
+  font-size: 3rem;
+  margin-bottom: var(--space-4);
+}
+
+.placeholder p {
+  font-size: var(--text-base);
+  margin: 0;
+}
+
+.errorMessage {
+  font-size: var(--text-base);
+  font-weight: var(--font-medium);
+  color: var(--color-error);
+  margin: 0 0 var(--space-4) 0;
+}
+
+.errorDetails {
+  text-align: left;
+  max-width: 400px;
+}
+
+.errorHint {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-2) 0;
+  font-weight: var(--font-medium);
+}
+
+.errorList {
+  font-size: var(--text-sm);
+  color: var(--text-secondary);
+  margin: 0 0 var(--space-3) var(--space-4);
+  padding: 0;
+}
+
+.errorList li {
+  margin-bottom: var(--space-1);
+}
+
+.errorNote {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  background: var(--bg-secondary);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-primary);
+  margin: 0;
+}
+
+.loadingOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 2;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--space-3);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingOverlay p {
+  font-size: var(--text-sm);
+  margin: 0;
+}
+
+.playOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  z-index: 1;
+}
+
+.playOverlay:hover {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.playButton {
+  width: 80px;
+  height: 80px;
+  background: var(--color-primary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-normal);
+  box-shadow: var(--shadow-lg);
+}
+
+.playButton:hover {
+  transform: scale(1.1);
+  box-shadow: var(--shadow-xl);
+}
+
+.playIcon {
+  font-size: 2rem;
+  color: white;
+  margin-left: 4px; /* Slight offset for visual centering */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .videoContainer {
+    border-radius: var(--radius-md);
+  }
+
+  .playButton {
+    width: 60px;
+    height: 60px;
+  }
+
+  .playIcon {
+    font-size: 1.5rem;
+  }
+
+  .placeholderIcon,
+  .errorIcon {
+    font-size: 2rem;
+  }
+
+  .placeholder,
+  .errorContainer {
+    padding: var(--space-4);
+  }
+}
+
+/* Focus styles for accessibility */
+.video:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.playOverlay:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: -2px;
+}
