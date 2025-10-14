@@ -12,6 +12,17 @@ import {
   uploadFileToR2,
 } from "../../services/cloudflare-r2";
 
+// Type declarations for Fastify multipart plugin
+declare module "fastify" {
+  interface FastifyRequest {
+    file(): Promise<{
+      filename: string;
+      mimetype: string;
+      toBuffer(): Promise<Buffer>;
+    } | null>;
+  }
+}
+
 const uploadUrlSchema = z.object({
   filename: z.string().min(1),
   contentType: z.string().min(1),
@@ -34,39 +45,7 @@ const transcribeSchema = z.object({
 });
 
 export async function videoRoutes(fastify: FastifyInstance) {
-  // Serve local video files
-  fastify.get("/videos/stream/:filename", {
-    handler: async (request, reply) => {
-      try {
-        const { filename } = request.params as { filename: string };
-
-        const filePath = path.join(
-          process.cwd(),
-          "uploads",
-          "videos",
-          filename
-        );
-
-        if (!fs.existsSync(filePath)) {
-          return reply.status(404).send({ error: "Video file not found" });
-        }
-
-        const stat = fs.statSync(filePath);
-        const fileStream = fs.createReadStream(filePath);
-
-        reply.type("video/mp4");
-        reply.header("Content-Length", stat.size);
-        reply.header("Accept-Ranges", "bytes");
-
-        return reply.send(fileStream);
-      } catch (error) {
-        console.error("Error streaming video:", error);
-        return reply.status(500).send({ error: "Failed to stream video" });
-      }
-    },
-  });
-
-  // Direct upload to avoid presigned URL 501 errors
+  // Generate presigned URL for direct upload to Cloudflare R2
   fastify.post("/videos/upload-direct", {
     preHandler: [fastify.authenticate],
     handler: async (request, reply) => {
@@ -82,6 +61,14 @@ export async function videoRoutes(fastify: FastifyInstance) {
 
         // Generate unique key
         const key = `videos/${Date.now()}-${filename}`;
+
+        // Check if R2 is configured
+        if (!isR2Configured()) {
+          return reply.status(500).send({
+            error: "Cloudflare R2 not configured",
+            message: "Please configure Cloudflare R2 environment variables",
+          });
+        }
 
         // Upload directly to R2
         const success = await uploadFileToR2(key, buffer, mimetype);

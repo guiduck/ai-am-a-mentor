@@ -1,20 +1,47 @@
 /**
- * SIMPLE LOCAL FILE STORAGE - NO MORE CLOUDFLARE BULLSHIT
- * Just save files locally and serve them - IT WORKS!
+ * Cloudflare R2 Storage Service
+ * Handles video uploads and streaming from Cloudflare R2
  */
 
-import fs from "fs";
-import path from "path";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 /**
- * Always configured for local storage
+ * Check if Cloudflare R2 is properly configured
  */
 export function isR2Configured(): boolean {
-  return true;
+  return !!(
+    process.env.CLOUDFLARE_ACCOUNT_ID &&
+    process.env.CLOUDFLARE_BUCKET_NAME &&
+    process.env.CLOUDFLARE_ACCESS_KEY_ID &&
+    process.env.CLOUDFLARE_SECRET_ACCESS_KEY
+  );
 }
 
 /**
- * Upload file to LOCAL STORAGE - guaranteed to work
+ * Initialize S3 client for Cloudflare R2
+ */
+function getR2Client() {
+  if (!isR2Configured()) {
+    throw new Error("Cloudflare R2 not configured");
+  }
+
+  return new S3Client({
+    region: "auto",
+    endpoint: `https://${process.env.CLOUDFLARE_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    credentials: {
+      accessKeyId: process.env.CLOUDFLARE_ACCESS_KEY_ID!,
+      secretAccessKey: process.env.CLOUDFLARE_SECRET_ACCESS_KEY!,
+    },
+  });
+}
+
+/**
+ * Upload file to Cloudflare R2
  */
 export async function uploadFileToR2(
   key: string,
@@ -22,75 +49,107 @@ export async function uploadFileToR2(
   contentType: string
 ): Promise<boolean> {
   try {
-    console.log("Saving file locally:", {
+    console.log("Uploading to Cloudflare R2:", {
       key,
       contentType,
       size: fileBuffer.length,
     });
 
-    // Create uploads directory
-    const uploadsDir = path.join(process.cwd(), "uploads");
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
-    }
+    const s3Client = getR2Client();
 
-    const videosDir = path.join(uploadsDir, "videos");
-    if (!fs.existsSync(videosDir)) {
-      fs.mkdirSync(videosDir, { recursive: true });
-    }
+    const command = new PutObjectCommand({
+      Bucket: process.env.CLOUDFLARE_BUCKET_NAME!,
+      Key: key,
+      Body: fileBuffer,
+      ContentType: contentType,
+    });
 
-    // Save file
-    const fileName = key.replace("videos/", "");
-    const filePath = path.join(videosDir, fileName);
+    await s3Client.send(command);
 
-    fs.writeFileSync(filePath, fileBuffer);
-
-    console.log("✅ LOCAL FILE SAVED:", {
+    console.log("✅ FILE UPLOADED TO R2:", {
       key,
-      filePath,
+      bucket: process.env.CLOUDFLARE_BUCKET_NAME,
       size: fileBuffer.length,
     });
 
     return true;
   } catch (error) {
-    console.error("❌ Local file save error:", error);
+    console.error("❌ R2 upload error:", error);
     return false;
   }
 }
 
 /**
- * Generate LOCAL file URL for video playback
+ * Generate signed URL for video streaming from Cloudflare R2
  */
 export async function generateStreamUrl(
   key: string,
-  expiresIn: number = 3600 // unused
+  expiresIn: number = 3600 // 1 hour
 ): Promise<string> {
-  // Return local file URL served by our API
-  const fileName = key.replace("videos/", "");
-  const streamUrl = `http://localhost:3001/api/videos/stream/${fileName}`;
+  try {
+    const s3Client = getR2Client();
 
-  console.log("✅ LOCAL STREAM URL:", streamUrl);
+    const command = new GetObjectCommand({
+      Bucket: process.env.CLOUDFLARE_BUCKET_NAME!,
+      Key: key,
+    });
 
-  return streamUrl;
+    const streamUrl = await getSignedUrl(s3Client, command, {
+      expiresIn,
+    });
+
+    console.log("✅ R2 STREAM URL GENERATED:", {
+      key,
+      expiresIn,
+      url: streamUrl.substring(0, 100) + "...",
+    });
+
+    return streamUrl;
+  } catch (error) {
+    console.error("❌ Failed to generate R2 stream URL:", error);
+    throw error;
+  }
 }
 
 /**
- * For backward compatibility - now returns backend upload endpoint
+ * Generate presigned POST URL for direct upload to Cloudflare R2
  */
 export async function generateUploadUrl(
   key: string,
   contentType: string,
   expiresIn: number = 3600 // 1 hour
 ): Promise<{ url: string; fields: Record<string, string> }> {
-  // Instead of presigned URLs, return our backend upload endpoint
-  return {
-    url: "/api/videos/upload-direct", // New backend endpoint
-    fields: {
+  try {
+    const s3Client = getR2Client();
+
+    const command = new PutObjectCommand({
+      Bucket: process.env.CLOUDFLARE_BUCKET_NAME!,
+      Key: key,
+      ContentType: contentType,
+    });
+
+    const presignedUrl = await getSignedUrl(s3Client, command, {
+      expiresIn,
+    });
+
+    console.log("✅ R2 PRESIGNED UPLOAD URL GENERATED:", {
       key,
       contentType,
-      method: "POST",
-    },
-  };
+      expiresIn,
+      url: presignedUrl.substring(0, 100) + "...",
+    });
+
+    return {
+      url: presignedUrl,
+      fields: {
+        key,
+        "Content-Type": contentType,
+      },
+    };
+  } catch (error) {
+    console.error("❌ Failed to generate R2 upload URL:", error);
+    throw error;
+  }
 }
 
 /**

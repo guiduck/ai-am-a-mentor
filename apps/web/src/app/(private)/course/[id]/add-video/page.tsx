@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { createVideo } from "@/services/videos";
-import { generateUploadUrl } from "@/services/videos";
+import API from "@/lib/api";
 import { Button } from "@/components/ui/Button/Button";
 import {
   Card,
@@ -92,24 +92,28 @@ export default function AddVideoPage() {
       const formData = new FormData();
       formData.append("file", selectedFile);
 
-      const uploadResponse = await fetch(
-        "http://localhost:3001/api/videos/upload-direct",
-        {
-          method: "POST",
-          credentials: "include", // Include cookies for authentication
-          body: formData,
-        }
-      );
+      // Use the centralized API service for upload
+      const uploadResponse = await API<{
+        key: string;
+        filename: string;
+        contentType: string;
+        size: number;
+        message: string;
+      }>("videos/upload-direct", {
+        method: "POST",
+        data: formData,
+      });
 
-      if (!uploadResponse.ok) {
-        const errorData = await uploadResponse.json();
-        console.error("Upload failed:", errorData);
+      if (uploadResponse.error || !uploadResponse.data) {
+        console.error("Upload failed:", uploadResponse.debug);
         throw new Error(
-          `Upload falhou: ${errorData.error || uploadResponse.statusText}`
+          `Upload falhou: ${
+            uploadResponse.errorUserMessage || "Erro desconhecido"
+          }`
         );
       }
 
-      const uploadResult = await uploadResponse.json();
+      const uploadResult = uploadResponse.data;
       toast.success("Upload concluído!");
 
       // Step 2: Create video record in database
