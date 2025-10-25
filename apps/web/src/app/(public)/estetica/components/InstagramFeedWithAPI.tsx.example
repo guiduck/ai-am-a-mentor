@@ -1,0 +1,307 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+
+/**
+ * EXEMPLO: Instagram Feed com Integração API
+ * 
+ * Este é um exemplo de como usar a API do Instagram para buscar posts automaticamente.
+ * 
+ * Para usar:
+ * 1. Renomeie este arquivo para InstagramFeed.tsx (substitua o atual)
+ * 2. Configure as variáveis de ambiente (veja ENV_EXAMPLE.md)
+ * 3. Reinicie o servidor
+ * 
+ * OU mantenha o arquivo atual com posts mockados se preferir atualização manual.
+ */
+
+interface InstagramPost {
+  id: string
+  caption: string
+  media_url: string
+  permalink: string
+  media_type: 'IMAGE' | 'VIDEO' | 'CAROUSEL_ALBUM'
+  timestamp: string
+  thumbnail_url?: string
+}
+
+export function InstagramFeed() {
+  const [posts, setPosts] = useState<InstagramPost[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  // CONFIGURE: @ do Instagram
+  const instagramHandle = '@seu_instagram_aqui'
+  const instagramUrl = `https://instagram.com/${instagramHandle.replace('@', '')}`
+
+  useEffect(() => {
+    async function fetchInstagramPosts() {
+      try {
+        const response = await fetch('/api/instagram')
+        const result = await response.json()
+
+        if (!response.ok) {
+          console.error('Instagram API Error:', result)
+          setError(result.message || 'Erro ao carregar posts')
+          return
+        }
+
+        if (result.data && Array.isArray(result.data)) {
+          // Pegar apenas os 6 primeiros posts
+          setPosts(result.data.slice(0, 6))
+        }
+      } catch (err) {
+        console.error('Error fetching Instagram:', err)
+        setError('Erro ao conectar com Instagram')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchInstagramPosts()
+  }, [])
+
+  // Loading state
+  if (loading) {
+    return (
+      <section className="instagram-section">
+        <div className="instagram-header">
+          <h2>Veja Nossos Resultados</h2>
+          <a 
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="instagram-handle"
+          >
+            <span>📸</span> {instagramHandle}
+          </a>
+        </div>
+        <div style={{ 
+          textAlign: 'center', 
+          padding: '60px 20px',
+          color: '#999' 
+        }}>
+          <div style={{ 
+            fontSize: '2rem', 
+            marginBottom: '15px' 
+          }}>
+            ⏳
+          </div>
+          Carregando posts do Instagram...
+        </div>
+      </section>
+    )
+  }
+
+  // Error state (fallback para posts mockados)
+  if (error || posts.length === 0) {
+    console.warn('Instagram API not available, using mock data:', error)
+    
+    // Fallback para posts mockados
+    const mockPosts = [
+      {
+        id: '1',
+        caption: 'Antes e depois incrível! 💫',
+        media_url: '',
+        permalink: instagramUrl,
+        media_type: 'IMAGE' as const,
+        timestamp: new Date().toISOString()
+      },
+      {
+        id: '2',
+        caption: 'Harmonização facial perfeita ✨',
+        media_url: '',
+        permalink: instagramUrl,
+        media_type: 'IMAGE' as const,
+        timestamp: new Date().toISOString()
+      },
+      {
+        id: '3',
+        caption: 'Preenchimento labial natural 💋',
+        media_url: '',
+        permalink: instagramUrl,
+        media_type: 'IMAGE' as const,
+        timestamp: new Date().toISOString()
+      },
+      {
+        id: '4',
+        caption: 'Resultado de botox impecável 🌟',
+        media_url: '',
+        permalink: instagramUrl,
+        media_type: 'IMAGE' as const,
+        timestamp: new Date().toISOString()
+      },
+      {
+        id: '5',
+        caption: 'Cliente feliz é tudo! 💖',
+        media_url: '',
+        permalink: instagramUrl,
+        media_type: 'IMAGE' as const,
+        timestamp: new Date().toISOString()
+      },
+      {
+        id: '6',
+        caption: 'Técnica avançada de preenchimento 💎',
+        media_url: '',
+        permalink: instagramUrl,
+        media_type: 'IMAGE' as const,
+        timestamp: new Date().toISOString()
+      }
+    ]
+
+    return (
+      <section className="instagram-section">
+        <div className="instagram-header">
+          <h2>Veja Nossos Resultados</h2>
+          <a 
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="instagram-handle"
+          >
+            <span>📸</span> {instagramHandle}
+          </a>
+        </div>
+
+        <div className="instagram-grid">
+          {mockPosts.map((post, index) => (
+            <a
+              key={post.id}
+              href={post.permalink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="instagram-post"
+            >
+              <div style={{
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '3rem',
+                background: `linear-gradient(${135 + index * 30}deg, #f8f0f5 0%, #e8e0f0 100%)`
+              }}>
+                {['💅', '✨', '💄', '🌸', '💖', '⭐'][index]}
+              </div>
+              <div className="instagram-overlay">
+                <span>❤️ {Math.floor(Math.random() * 500) + 100}</span>
+                <span>💬 {Math.floor(Math.random() * 50) + 5}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+
+        <div style={{ 
+          textAlign: 'center', 
+          marginTop: '40px' 
+        }}>
+          <a 
+            href={instagramUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="cta-button"
+          >
+            <span>📱</span>
+            Ver Mais no Instagram
+          </a>
+        </div>
+      </section>
+    )
+  }
+
+  // Success state - mostra posts reais da API
+  return (
+    <section className="instagram-section">
+      <div className="instagram-header">
+        <h2>Veja Nossos Resultados</h2>
+        <a 
+          href={instagramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="instagram-handle"
+        >
+          <span>📸</span> {instagramHandle}
+        </a>
+      </div>
+
+      <div className="instagram-grid">
+        {posts.map((post) => (
+          <a
+            key={post.id}
+            href={post.permalink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="instagram-post"
+          >
+            {/* Renderiza imagem ou thumbnail do vídeo */}
+            {post.media_type === 'VIDEO' ? (
+              <img 
+                src={post.thumbnail_url || post.media_url} 
+                alt={post.caption || 'Instagram post'}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
+                }}
+              />
+            ) : (
+              <img 
+                src={post.media_url} 
+                alt={post.caption || 'Instagram post'}
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover'
+                }}
+              />
+            )}
+            
+            {/* Overlay com informações */}
+            <div className="instagram-overlay">
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '10px'
+              }}>
+                {post.media_type === 'VIDEO' && (
+                  <span style={{ fontSize: '2rem' }}>▶️</span>
+                )}
+                {post.media_type === 'CAROUSEL_ALBUM' && (
+                  <span style={{ fontSize: '1.5rem' }}>📸 Múltiplas fotos</span>
+                )}
+                <span style={{ 
+                  fontSize: '0.9rem',
+                  textAlign: 'center',
+                  padding: '0 10px',
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden'
+                }}>
+                  {post.caption?.substring(0, 100)}
+                </span>
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+
+      <div style={{ 
+        textAlign: 'center', 
+        marginTop: '40px' 
+      }}>
+        <a 
+          href={instagramUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="cta-button"
+        >
+          <span>📱</span>
+          Ver Mais no Instagram
+        </a>
+      </div>
+    </section>
+  )
+}
+
