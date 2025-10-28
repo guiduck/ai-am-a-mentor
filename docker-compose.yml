@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 services:
   db:
     image: postgres:14
@@ -8,9 +8,22 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: videolearndb
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
+
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile.local
+    ports:
+      - "3333:3000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@db:5432/videolearndb
+      - JWT_SECRET=your-jwt-secret
+      - NODE_ENV=development
+    depends_on:
+      - db
 
 volumes:
   db-data:
