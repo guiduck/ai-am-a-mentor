@@ -39,5 +39,8 @@
     "dotenv": "^17.0.0",
     "dotenv-cli": "^8.0.0",
     "tsx": "^4.20.3"
+  },
+  "bin": {
+    "drizzle-kit": "./node_modules/.bin/drizzle-kit"
   }
 }
