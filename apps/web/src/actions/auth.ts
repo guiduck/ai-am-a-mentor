@@ -19,12 +19,18 @@ export async function registerAndLogin(data: {
   email: string;
   password: string;
   username: string;
-}): Promise<APIResponse<{ access_token: string }> | null> {
+}): Promise<APIResponse<{ access_token: string }>> {
   // First register the user
   const registerRes = await registerUser(data);
 
   if (registerRes.error) {
-    return registerRes;
+    return {
+      status: registerRes.status,
+      error: true,
+      errorUserMessage: registerRes.errorUserMessage,
+      data: null,
+      headers: registerRes.headers,
+    };
   }
 
   // Then login automatically
@@ -34,7 +40,13 @@ export async function registerAndLogin(data: {
   });
 
   if (loginRes.error || !loginRes.data?.token) {
-    return loginRes;
+    return {
+      status: loginRes.status,
+      error: true,
+      errorUserMessage: loginRes.errorUserMessage || "Falha no login.",
+      data: null,
+      headers: loginRes.headers,
+    };
   }
 
   const token = loginRes.data.token;
