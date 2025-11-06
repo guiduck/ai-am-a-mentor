@@ -42,14 +42,14 @@ export default function FormLogin() {
       return;
     }
 
+    // Set token in Zustand store if available
+    if (res?.data?.access_token) {
+      const { setToken } = useAuthStore.getState();
+      setToken(res.data.access_token);
+    }
+
     // Initialize user data in Zustand store after successful login
     await initializeAuthFromAPI();
-
-    // Also set the token in Zustand store for API calls
-    if (res?.data?.access_token) {
-      // Get user data from the API response and set both user and token
-      const response = await initializeAuthFromAPI();
-    }
 
     toast.success("Login realizado com sucesso!");
     // Let middleware handle the redirect based on user role

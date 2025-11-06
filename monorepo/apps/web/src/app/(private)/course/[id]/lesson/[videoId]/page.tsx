@@ -65,9 +65,11 @@ export default function LessonPage() {
       setLoadingStream(true);
       const streamData = await getVideoStreamUrl(videoId);
       if (streamData) {
+        console.log("Stream URL received:", streamData.streamUrl);
         setStreamUrl(streamData.streamUrl);
       } else {
-        toast.error("Não foi possível carregar o vídeo");
+        console.error("Failed to get stream URL for video:", videoId);
+        toast.error("Não foi possível carregar o vídeo. Verifique se o vídeo foi enviado.");
       }
       setLoadingStream(false);
     } catch (error) {

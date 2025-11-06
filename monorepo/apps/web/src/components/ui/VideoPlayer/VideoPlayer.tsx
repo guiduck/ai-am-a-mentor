@@ -52,11 +52,13 @@ export default function VideoPlayer({
     const handlePause = () => setIsPlaying(false);
 
     // Add a timeout to catch videos that never load
+    // Increased timeout for large videos and streaming
     const loadTimeout = setTimeout(() => {
       if (isLoading) {
+        console.warn("⏱️ Video load timeout after 30 seconds");
         handleError();
       }
-    }, 10000); // 10 second timeout
+    }, 30000); // 30 second timeout for streaming videos
 
     video.addEventListener("loadstart", handleLoadStart);
     video.addEventListener("loadeddata", handleLoadedData);
